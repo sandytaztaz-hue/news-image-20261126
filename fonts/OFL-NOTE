@@ -1,0 +1,8 @@
+Fonts in this directory
+----------------------
+
+LiberationSerif-Regular.ttf and LiberationSerif-Bold.ttf are the
+Liberation Serif fonts, licensed under the SIL Open Font License,
+Version 1.1 (https://scripts.sil.org/OFL). They are vendored here so
+the program renders identically in any environment, including the
+make.fun sandbox, without relying on system-installed fonts.

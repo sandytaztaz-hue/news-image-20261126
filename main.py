@@ -12,8 +12,11 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1024, 1024
+_BASE = os.path.dirname(os.path.abspath(__file__))
 SERIF = "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf"
 SERIF_B = "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf"
+SERIF_LOCAL = os.path.join(_BASE, "fonts", "LiberationSerif-Regular.ttf")
+SERIF_B_LOCAL = os.path.join(_BASE, "fonts", "LiberationSerif-Bold.ttf")
 
 INK = (17, 17, 17)
 PAPER = (253, 252, 248)
@@ -28,7 +31,16 @@ GOLD = (176, 132, 30)
 
 
 def font(size, bold=False):
-    return ImageFont.truetype(SERIF_B if bold else SERIF, size)
+    # Try the vendored fonts first (self-contained), then the system
+    # paths, then Pillow's built-in default so a missing font can never
+    # crash the render with an uncaught OSError.
+    for path in ((SERIF_B_LOCAL if bold else SERIF_LOCAL),
+                 (SERIF_B if bold else SERIF)):
+        try:
+            return ImageFont.truetype(path, size)
+        except OSError:
+            continue
+    return ImageFont.load_default(size)
 
 
 def wrap(draw, text, fnt, max_w):
@@ -138,7 +150,7 @@ ALSO = [
     ("ASIA", "Malaysia sues Google for $146m"),
     ("AMERICAS", "US confidence hits near two-year high"),
     ("AMERICAS", "Fed Beige Book: modest growth, wage gains"),
-    ("AMERICAS", "US unveils F-15EX fighters at Kadena"),
+    ("ASIA", "US unveils F-15EX fighters at Kadena"),
     ("AMERICAS", "Petrobras unveils $122bn investment plan"),
     ("AMERICAS", "Venezuela reveals $237.5bn public debt"),
     ("AMERICAS", "Six die in plane crash off Mississippi"),
